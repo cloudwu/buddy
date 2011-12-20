@@ -25,7 +25,7 @@ buddy_new(int level) {
 	for (i=1;i<size * 2 - 2;i++) {
 		self->tree[i].left = i+1;
 	}
-	self->tree[size*2-2].left = 0;
+	self->tree[size*2-2].left = -1;
 
 	self->tree[0].left = self->tree[0].right = 0;
 	return self;
