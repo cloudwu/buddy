@@ -16,13 +16,22 @@ test_free(struct buddy *b, int addr) {
 	buddy_dump(b);
 }
 
+static void
+test_size(struct buddy *b, int addr) {
+	int s = buddy_size(b,addr);
+	printf("size %d (sz = %d)\n",addr,s);
+}
+
 int
 main() {
-	struct buddy * b = buddy_new(4);
+	struct buddy * b = buddy_new(5);
 	buddy_dump(b);
-	int m1 = test_alloc(b,2);
-	int m2 = test_alloc(b,4);
-	int m3 = test_alloc(b,2);
+	int m1 = test_alloc(b,4);
+	test_size(b,m1);
+	int m2 = test_alloc(b,9);
+	test_size(b,m2);
+	int m3 = test_alloc(b,3);
+	test_size(b,m3);
 	test_free(b,m3);
 	test_free(b,m1);
 	test_free(b,m2);

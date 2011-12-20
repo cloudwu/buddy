@@ -113,6 +113,7 @@ buddy_alloc(struct buddy * self , int size) {
 
 static int
 _free(struct buddy * self, int index, int start, int length, int offset) {
+	assert(length > 0);
 	struct node * current = &(self->tree[index]);
 	if (start == offset) {
 		if (current->left == -1) {
@@ -148,6 +149,31 @@ buddy_free(struct buddy * self, int offset) {
 	if (_free(self, 0, 0, self->size, offset)) {
 		self->tree[0].left = self->tree[0].right = 0;
 	}
+}
+
+static int
+_size(struct buddy * self, int index, int start, int length, int offset) {
+	assert(length > 0);
+	struct node * current = &(self->tree[index]);
+	if (start == offset) {
+		if (current->left == -1) {
+			return length;
+		}
+	}
+	if (offset < start + length/2) {
+		index = current->left;
+		assert(index > 0);
+		return _size(self, index, start, length/2 , offset);
+	} else {
+		index = current->right;
+		assert(index > 0);
+		return _size(self, index, start+length/2, length/2 , offset);
+	}
+}
+
+int
+buddy_size(struct buddy * self, int offset) {
+	return _size(self, 0 , 0 , self->size, offset);
 }
 
 static void
