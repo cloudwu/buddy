@@ -10,7 +10,6 @@ struct node {
 };
 
 struct buddy {
-	int level;
 	int size;
 	int free;
 	struct node tree[1];
@@ -20,7 +19,6 @@ struct buddy *
 buddy_new(int level) {
 	int size = 1 << level;
 	struct buddy * self = malloc(sizeof(struct buddy) + sizeof(struct node) * (size * 2 - 2));
-	self->level = level + 1;
 	self->size = size;
 	self->free = 1;
 	int i;
