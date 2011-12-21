@@ -79,6 +79,7 @@ _alloc(struct buddy * self, int index, int start, int length, int size) {
 		}
 		return -1;
 	}
+    if (current->left == -1) return -1;
 	if (current->left != 0) {
 		int r = _alloc(self, current->left, start, length/2 , size);
 		if (r>=0)
