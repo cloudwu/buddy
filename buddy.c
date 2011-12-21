@@ -7,7 +7,8 @@
 
 #define NODE_UNUSED 0
 #define NODE_USED 1	
-#define NODE_SPLIT 2		
+#define NODE_SPLIT 2
+#define NODE_FULL 3
 
 struct buddy {
 	int level;
@@ -50,6 +51,19 @@ _index_offset(int index, int level, int max_level) {
 	return ((index + 1) - (1 << level)) << (max_level - level);
 }
 
+static void 
+_mark_parent(struct buddy * self, int index) {
+	for (;;) {
+		int buddy = index - 1 + (index & 1) * 2;
+		if (buddy > 0 && (self->tree[buddy] == NODE_USED ||	self->tree[buddy] == NODE_FULL)) {
+			index = (index + 1) / 2 - 1;
+			self->tree[index] = NODE_FULL;
+		} else {
+			return;
+		}
+	}
+}
+
 int 
 buddy_alloc(struct buddy * self , int s) {
 	int size;
@@ -70,12 +84,14 @@ buddy_alloc(struct buddy * self , int s) {
 		if (size == length) {
 			if (self->tree[index] == NODE_UNUSED) {
 				self->tree[index] = NODE_USED;
+				_mark_parent(self, index);
 				return _index_offset(index, level, self->level);
 			}
 		} else {
 			// size < length
 			switch (self->tree[index]) {
 			case NODE_USED:
+			case NODE_FULL:
 				break;
 			case NODE_UNUSED:
 				// split first
@@ -115,6 +131,9 @@ _combine(struct buddy * self, int index) {
 		int buddy = index - 1 + (index & 1) * 2;
 		if (buddy < 0 || self->tree[buddy] != NODE_UNUSED) {
 			self->tree[index] = NODE_UNUSED;
+			while ((index = (index + 1) / 2 - 1) >= 0) {
+				self->tree[index] = NODE_SPLIT;
+			}
 			return;
 		}
 		index = (index + 1) / 2 - 1;
@@ -187,11 +206,18 @@ _dump(struct buddy * self, int index , int level) {
 	case NODE_USED:
 		printf("[%d:%d]", _index_offset(index, level, self->level) , 1 << (self->level - level));
 		break;
+	case NODE_FULL:
+		printf("{");
+		_dump(self, index * 2 + 1 , level+1);
+		_dump(self, index * 2 + 2 , level+1);
+		printf("}");
+		break;
 	default:
 		printf("(");
 		_dump(self, index * 2 + 1 , level+1);
 		_dump(self, index * 2 + 2 , level+1);
 		printf(")");
+		break;
 	}
 }
 
