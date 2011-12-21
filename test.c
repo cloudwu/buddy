@@ -36,6 +36,12 @@ main() {
 	test_free(b,m1);
 	test_free(b,m2);
 
+	int m4 = test_alloc(b,32);
+	test_free(b,m4);
+
+	int m5 = test_alloc(b,0);
+	test_free(b,m5);
+
 	buddy_delete(b);
 	return 0;
 }

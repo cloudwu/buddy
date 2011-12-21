@@ -52,7 +52,12 @@ _index_offset(int index, int level, int max_level) {
 
 int 
 buddy_alloc(struct buddy * self , int s) {
-	int size = (int)next_pow_of_2(s);
+	int size;
+	if (s==0) {
+		size = 1;
+	} else {
+		size = (int)next_pow_of_2(s);
+	}
 	int length = 1 << self->level;
 
 	if (size > length)
