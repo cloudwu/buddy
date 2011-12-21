@@ -32,9 +32,16 @@ main() {
 	test_size(b,m2);
 	int m3 = test_alloc(b,3);
 	test_size(b,m3);
+	int m4 = test_alloc(b,2);
+	test_size(b,m4);
+	int m5 = test_alloc(b,1);
+	test_size(b,m5);
+
 	test_free(b,m3);
 	test_free(b,m1);
+	test_free(b,m5);
 	test_free(b,m2);
+	test_free(b,m4);
 
 	buddy_delete(b);
 	return 0;
