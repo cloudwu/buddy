@@ -131,7 +131,7 @@ _combine(struct buddy * self, int index) {
 		int buddy = index - 1 + (index & 1) * 2;
 		if (buddy < 0 || self->tree[buddy] != NODE_UNUSED) {
 			self->tree[index] = NODE_UNUSED;
-			while ((index = (index + 1) / 2 - 1) >= 0) {
+			while (((index = (index + 1) / 2 - 1) >= 0) &&  self->tree[index] == NODE_FULL){
 				self->tree[index] = NODE_SPLIT;
 			}
 			return;
