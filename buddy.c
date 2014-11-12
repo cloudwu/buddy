@@ -12,7 +12,7 @@
 
 struct buddy {
 	int level;
-	uint8_t tree[1];
+	uint8_t tree[];
 };
 
 struct buddy * 
